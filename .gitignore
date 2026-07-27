@@ -1,0 +1,14 @@
+# secrets / local config
+.env
+keycloak/import/
+
+# personal notes — not for the public repo
+speech.md
+
+# external plugins (cloned, not vendored)
+plugins/*
+!plugins/.gitkeep
+
+# logs & scratch
+*.log
+*.tmp

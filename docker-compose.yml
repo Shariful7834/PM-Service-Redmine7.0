@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-redmine_production}
+      POSTGRES_USER: ${DB_USER:-redmine}
+      POSTGRES_PASSWORD: ${DB_PASS:?set DB_PASS in .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-redmine}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redmine:
+    # Redmine 7.0.0 via sameersbn image (official library/redmine has no 7.x tag yet,
+    # verified 2026-07-20). Env scheme: DB_* + REDMINE_SECRET_TOKEN, container port 80,
+    # data dir /home/redmine/data. Ref: https://github.com/sameersbn/docker-redmine
+    image: sameersbn/redmine:${REDMINE_VERSION:-7.0.0-2}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${REDMINE_PORT:-3000}:80"
+    # Lets the Redmine container reach Keycloak on the same hostname the browser uses,
+    # so the OIDC issuer matches on both sides (avoids docker issuer-mismatch).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      DB_ADAPTER: postgresql
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-redmine_production}
+      DB_USER: ${DB_USER:-redmine}
+      DB_PASS: ${DB_PASS:?set DB_PASS in .env}
+      REDMINE_PORT: ${REDMINE_PORT:-3000}
+      REDMINE_HTTPS: "false"
+      REDMINE_SECRET_TOKEN: ${REDMINE_SECRET_TOKEN:?set REDMINE_SECRET_TOKEN in .env}
+    volumes:
+      - redmine_data:/home/redmine/data
+      - redmine_logs:/var/log/redmine
+      # redmine_oauth plugin — sameersbn auto-installs gems + runs migration on start
+      - ./plugins:/home/redmine/data/plugins
+
+  # Local identity provider for the OAuth/OIDC proof-of-concept. Stands in for D's
+  # real central IdP (unknown until Farhat confirms). Realm + client + test user are
+  # imported from ./keycloak/import on first start — no manual Keycloak clicking.
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in .env}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "${KEYCLOAK_PORT:-8080}:8080"
+    volumes:
+      - ./keycloak/import:/opt/keycloak/data/import:ro
+      - keycloak_data:/opt/keycloak/data
+
+volumes:
+  db_data:
+  redmine_data:
+  redmine_logs:
+  keycloak_data:
