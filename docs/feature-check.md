@@ -12,8 +12,8 @@ console. No row is filled from memory or marketing pages. Test objects live in t
 | Projects & sub-projects | Jira | ✅ core | – | **OK native** | `POST /projects.json` → `dee-eval` (id 1); sub-project `dee-eval-sub` (id 2, parent "DEE Eval"). Note: API wants numeric `parent_id`. |
 | Issues, types, custom fields | Jira | ✅ core | – | **OK native** | Trackers Bug/Feature/Support present; issue #1 created via API; custom field "Customer" (string, all trackers) created. |
 | Workflows / status transitions per role | Jira | ✅ core | – | **OK native** | Live instance: 5 roles, 6 statuses, **144 workflow transitions** configured per role×tracker. |
-| Agile boards (Scrum/Kanban) | Jira | ❌ | ✅ e.g. RedmineUP Agile (free "Light" / paid PRO) | **OK with plugin** | Not in core UI of the running 7.0 instance. **Biggest gap vs Jira** — adoption-relevant. Plugin not yet installed/tested. |
-| Sprints / backlog | Jira | ❌ (versions ≈ sprints) | ✅ same Agile plugin | **OK with plugin** | Core "versions" can emulate sprint buckets (tested, see Roadmap row) but no board/backlog UI. |
+| Agile boards (Scrum/Kanban) | Jira | ❌ | ⚠️ RedmineUP Agile (free "Light" / paid PRO) — vendor compat list says **Redmine 6.1–4.0, no 7.0 yet** (checked redmineup.com 2026-07-27) | **Gap on 7.0 for now** | Not in core UI of the running 7.0 instance. **Biggest gap vs Jira** — adoption-relevant. Plugin not installed; on 7.0 needs a compatibility test or vendor update first. |
+| Sprints / backlog | Jira | ❌ (versions ≈ sprints) | ⚠️ same Agile plugin (same 7.0 caveat) | **Gap on 7.0 for now** | Core "versions" can emulate sprint buckets (tested, see Roadmap row) but no board/backlog UI. |
 | Time tracking | Jira | ✅ core | – | **OK native** | `POST /time_entries.json` → 1.5 h logged on issue #1 with comment. |
 | Roadmap / versions / milestones | Jira | ✅ core | – | **OK native** | `POST /projects/dee-eval/versions.json` → version "Sprint 1", due 2026-08-31. |
 | Wiki with page hierarchy | Confluence | ✅ core | – | **OK native** | `PUT …/wiki/Home.json` (201) + child page `Architecture` with `parent_title=Home` (201). |
@@ -31,8 +31,10 @@ console. No row is filled from memory or marketing pages. Test objects live in t
 1. **Jira replacement: yes, with one caveat.** Issues, workflows (144 role-based
    transitions out of the box), time tracking, versions/roadmap, custom fields, API —
    all core and verified. The one real gap is the **agile board (Scrum/Kanban) UI**,
-   which needs the Agile plugin family (free Light tier exists). This is the main
-   adoption decision for the group.
+   which needs the Agile plugin family. A free Light tier exists, **but the vendor's
+   compatibility list stops at Redmine 6.1 as of 2026-07-27 — 7.0 support is not
+   published yet**, so on 7.0 this is currently an open gap pending a compatibility
+   test or vendor update. This is the main adoption decision for the group.
 2. **Confluence replacement: yes for DEE's internal-doc needs.** Hierarchical wiki,
    Markdown (CommonMark), attachments, versioning, full-text search — all verified
    core. Confluence's rich macros/templates have no 1:1 equivalent; wiki is plainer.
