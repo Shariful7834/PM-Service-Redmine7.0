@@ -25,20 +25,33 @@ docker compose down            # keep data
 docker compose down -v         # wipe db + redmine data (fresh install)
 ```
 
-## Version note — why sameersbn, not the official image
+## Version note — why sameersbn (and the migration path to the official image)
 
-Supervisor requires **Redmine 7.0** (no 6.x). Status (verified 2026-07-20):
+Supervisor requires **Redmine 7.0** (no 6.x). The running instance is genuine
+**7.0.0 stable** — confirmed via `lib/redmine/version.rb` and `/admin/info`.
 
-- **Redmine 7.0.0 released** — stable, 2026-06-30 (Rails 8, Ruby 4.0, webhooks).
+Timeline:
+
+- **2026-06-30** — Redmine 7.0.0 released (Rails 8, Ruby 4.0, webhooks).
   Source: https://www.redmine.org/news/161
-- **Official `library/redmine` has NO 7.x Docker image yet** — `docker manifest
-  inspect redmine:7.0` → not found; tops out at `6.1.3`.
-- **`sameersbn/redmine:7.0.0` DOES exist** → used here to run genuine 7.0 today.
+- **2026-07-20** — official `library/redmine` had **no** 7.x image
+  (`docker manifest inspect redmine:7.0` → not found, tops out at `6.1.3`), while
+  `sameersbn/redmine:7.0.0` did exist → **sameersbn chosen** to run real 7.0
+  rather than downgrade to 6.x.
+- **2026-07-27** — the **official `redmine:7.0` / `redmine:7.0.0` images are now
+  published**. Migrating to them is a sensible next step, ideally before the
+  server deployment.
 
-Trade-off: sameersbn uses a different env-var scheme (`DB_*`, `REDMINE_SECRET_TOKEN`,
-container listens on port **80**). When the official 7.0 image lands, can migrate to
-it (revert to `REDMINE_DB_*` scheme). Running version confirmed **7.0.0 stable** via
-`lib/redmine/version.rb`.
+Migration is more than swapping the image tag — the two images differ in:
+
+| | sameersbn (current) | official |
+|---|---|---|
+| DB env vars | `DB_ADAPTER`, `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` | `REDMINE_DB_POSTGRES`, `REDMINE_DB_DATABASE`, `REDMINE_DB_USERNAME`, `REDMINE_DB_PASSWORD` |
+| Secret var | `REDMINE_SECRET_TOKEN` | `REDMINE_SECRET_KEY_BASE` |
+| Container port | 80 | 3000 |
+| Data / plugin dir | `/home/redmine/data` (plugins auto-installed) | `/usr/src/redmine/files`, plugins in `/usr/src/redmine/plugins` (manual `bundle install` + migrate) |
+
+The PostgreSQL database itself is standard Redmine schema, so it carries over.
 
 ## Task board status (PM-Service Redmine)
 
