@@ -59,7 +59,8 @@ for tpl in keycloak/*.template.json; do
   if command -v envsubst >/dev/null; then
     envsubst < "$tpl" > "$out"
   else
-    sed -e "s|\${REDMINE_OAUTH_CLIENT_SECRET}|${REDMINE_OAUTH_CLIENT_SECRET}|g" \
+    sed -e "s|\${REDMINE_PORT}|${REDMINE_PORT}|g" \
+        -e "s|\${REDMINE_OAUTH_CLIENT_SECRET}|${REDMINE_OAUTH_CLIENT_SECRET}|g" \
         -e "s|\${IDIAL_CLIENT_SECRET}|${IDIAL_CLIENT_SECRET}|g" \
         -e "s|\${KEYCLOAK_TEST_USER_PASSWORD}|${KEYCLOAK_TEST_USER_PASSWORD}|g" \
         -e "s|\${IDIAL_TEST_USER_PASSWORD}|${IDIAL_TEST_USER_PASSWORD}|g" \
