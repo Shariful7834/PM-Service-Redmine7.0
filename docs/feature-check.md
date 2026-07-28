@@ -1,8 +1,8 @@
 # Feature check: Redmine 7.0 vs Jira + Confluence (+ OTRS note)
 
 **Method:** every row below was tested **hands-on** in the running local instance
-(Redmine 7.0.0, sameersbn image) on 2026-07-27, via REST API calls and the Rails
-console. No row is filled from memory or marketing pages. Test objects live in the
+(Redmine 7.0.0) on 2026-07-27, via REST API calls and the Rails console; re-verified
+2026-07-28 after the in-place migration to the official `redmine:7.0` image. No row is filled from memory or marketing pages. Test objects live in the
 `dee-eval` project.
 
 ## Result table

@@ -35,17 +35,18 @@ Repo: https://github.com/kontron/redmine_oauth
 5. Redmine exchanges the code for tokens (server-to-server), reads the **email
    claim**, matches/creates the Redmine user, opens a session.
 
-## Install plan (sameersbn image caveat)
+## Plugin installation (official image)
 
-Brief's Dockerfile `FROM redmine:7.0` **does not work** — no official 7.0 image
-(verified 2026-07-20). We run **sameersbn/redmine:7.0.0**. Its plugin flow (chosen,
-option A): drop the plugin in the data `plugins/` dir and the image **auto-installs
-gems + runs the migration on start** — no manual rake needed. Plugin gems are
-`jwt`, `oauth2`, `repost` (pure Ruby, no build-essential required).
+The stack runs the official `redmine:7.0` image (via the repo's one-line
+`Dockerfile`). Plugin flow: `plugins/redmine_oauth` is bind-mounted to
+`/usr/src/redmine/plugins`; the image entrypoint runs `bundle check || bundle
+install` on start (plugin gems `jwt`, `oauth2`, `repost` — pure Ruby, no build
+tools needed) and, because `REDMINE_PLUGINS_MIGRATE=1` is set, applies plugin
+migrations automatically. No manual rake steps.
 
 Implemented in this repo:
-- `plugins/redmine_oauth` — cloned `kontron/redmine_oauth` v4.2.0 (requires Redmine
-  ≥6.0; works on 7.0). Bind-mounted to `/home/redmine/data/plugins`.
+- `plugins/redmine_oauth` — cloned `kontron/redmine_oauth` v4.2.0 (requires
+  Redmine ≥6.0; runs on 7.0.0 — verified).
 
 ## Local Keycloak POC — ✅ VERIFIED WORKING (implemented, reproducible)
 

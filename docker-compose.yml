@@ -15,12 +15,9 @@ services:
       retries: 5
 
   redmine:
-    # OFFICIAL Redmine 7.0 image (published ~2026-07-27) + one-line Dockerfile fix
-    # for /themes asset serving. Previous sameersbn setup kept as
-    # docker-compose.sameersbn.yml for rollback. Same postgres volume/creds, so all
-    # data (projects, wiki, oauth providers) carries over.
-    # Entrypoint runs `bundle check || bundle install` (plugin gems) and, with
-    # REDMINE_PLUGINS_MIGRATE set, `rake redmine:plugins:migrate` on start.
+    # OFFICIAL Redmine 7.0 image + one-line Dockerfile fix for /themes asset
+    # serving. Entrypoint runs `bundle check || bundle install` (plugin gems) and,
+    # with REDMINE_PLUGINS_MIGRATE set, `rake redmine:plugins:migrate` on start.
     build: .
     image: dee-redmine:${REDMINE_VERSION:-7.0}
     restart: unless-stopped

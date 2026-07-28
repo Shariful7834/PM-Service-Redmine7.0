@@ -11,7 +11,7 @@ OTRS / email-ticketing replacement is **out of scope**.
 
 ```bash
 cp .env.example .env
-# edit .env — set DB_PASS and REDMINE_SECRET_TOKEN
+# edit .env — set DB_PASS and REDMINE_SECRET_KEY_BASE
 docker compose up -d
 docker compose logs -f redmine    # first boot runs DB init + migrations
 ```
@@ -25,33 +25,18 @@ docker compose down            # keep data
 docker compose down -v         # wipe db + redmine data (fresh install)
 ```
 
-## Version note — why sameersbn (and the migration path to the official image)
+## Image
 
-Supervisor requires **Redmine 7.0** (no 6.x). The running instance is genuine
-**7.0.0 stable** — confirmed via `lib/redmine/version.rb` and `/admin/info`.
+Runs the **official `redmine:7.0` Docker image** (genuine **7.0.0 stable**,
+confirmed via `lib/redmine/version.rb` and `/admin/info`), extended by a one-line
+`Dockerfile` (`dee-redmine:7.0`) that fixes `/themes` asset serving — since
+Redmine 6 the asset pipeline compiles theme assets to `public/assets/themes/`
+while pages link `/themes/`, which must be served explicitly.
 
-Timeline:
-
-- **2026-06-30** — Redmine 7.0.0 released (Rails 8, Ruby 4.0, webhooks).
-  Source: https://www.redmine.org/news/161
-- **2026-07-20** — official `library/redmine` had **no** 7.x image
-  (`docker manifest inspect redmine:7.0` → not found, tops out at `6.1.3`), while
-  `sameersbn/redmine:7.0.0` did exist → **sameersbn chosen** to run real 7.0
-  rather than downgrade to 6.x.
-- **2026-07-27** — the **official `redmine:7.0` / `redmine:7.0.0` images are now
-  published**. Migrating to them is a sensible next step, ideally before the
-  server deployment.
-
-Migration is more than swapping the image tag — the two images differ in:
-
-| | sameersbn (current) | official |
-|---|---|---|
-| DB env vars | `DB_ADAPTER`, `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` | `REDMINE_DB_POSTGRES`, `REDMINE_DB_DATABASE`, `REDMINE_DB_USERNAME`, `REDMINE_DB_PASSWORD` |
-| Secret var | `REDMINE_SECRET_TOKEN` | `REDMINE_SECRET_KEY_BASE` |
-| Container port | 80 | 3000 |
-| Data / plugin dir | `/home/redmine/data` (plugins auto-installed) | `/usr/src/redmine/files`, plugins in `/usr/src/redmine/plugins` (manual `bundle install` + migrate) |
-
-The PostgreSQL database itself is standard Redmine schema, so it carries over.
+History: Redmine 7.0.0 was released 2026-06-30, but the official Docker image
+only followed ~2026-07-27. The initial test installation therefore ran on a
+community image; the stack was migrated in place to the official image on
+2026-07-28 (same PostgreSQL volume — all data preserved and re-verified).
 
 ## Task board status (PM-Service Redmine)
 
@@ -77,8 +62,10 @@ Keycloak admin: `http://localhost:8088` (`admin` / `KEYCLOAK_ADMIN_PASSWORD`).
 
 ## Layout
 
-- `docker-compose.yml` — redmine (sameersbn 7.0.0) + postgres
+- `docker-compose.yml` — redmine (official 7.0 base) + postgres + keycloak (dev IdP)
+- `Dockerfile` — `dee-redmine:7.0`: official image + `/themes` serving fix
 - `.env.example` — config template (copy to `.env`)
-- `plugins/` — Redmine plugins (Phase 3: `redmine_oauth`)
-- `keycloak/` — local IdP for the OAuth proof-of-concept (Phase 3)
-- `docs/` — graded deliverables (feature-check, oauth, deployment, migration) + screenshots
+- `plugins/` — Redmine plugins (`redmine_oauth`)
+- `themes/dee/` — DEE color theme (two placeholder hex values to swap)
+- `keycloak/` — local IdP for the OAuth proof-of-concept (dev only)
+- `docs/` — deliverables (feature-check, oauth, multi-provider, deployment, migration)
