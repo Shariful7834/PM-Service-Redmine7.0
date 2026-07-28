@@ -1,9 +1,15 @@
 /* DEE theme for Redmine 7 — placeholder color scheme.
  *
- * Redmine loads this stylesheet IN ADDITION to the default one, so only
- * overrides belong here. Replace the two hex values below with the official
- * DEE corporate colors once the team provides them (ask Alysia/Christian).
+ * IMPORTANT: a theme's application.css REPLACES Redmine's core stylesheet, it is
+ * not loaded in addition to it. The @import below pulls the core styles back in
+ * and must stay the first rule in this file — without it the whole UI renders
+ * unstyled. Redmine's own themes (classic, alternate) use the same pattern.
+ *
+ * Replace the two hex values below with the official DEE corporate colors once
+ * the team provides them (ask Alysia/Christian).
  */
+@import url(/application.css);
+
 :root {
   --dee-primary: #005b7f;   /* header / top menu background  — PLACEHOLDER */
   --dee-accent:  #39b54a;   /* links / highlights            — PLACEHOLDER */
