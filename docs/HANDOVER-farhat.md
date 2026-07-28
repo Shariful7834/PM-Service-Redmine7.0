@@ -52,26 +52,38 @@ plugin: `redmine_oauth` 4.2.0 (Kontron) — provides the OAuth2/OIDC login.
 ## 4. Deployment steps
 
 ```bash
-git clone https://github.com/Shariful7834/PM-Service-Redmine7.0.git redmine
-cd redmine
+git clone <repository-url> redmine && cd redmine
+
 cp .env.example .env
-# edit .env: set strong DB_PASS and REDMINE_SECRET_KEY_BASE (64 hex chars);
-# the KEYCLOAK_* variables are unused in production (local dev IdP only)
-docker compose up -d redmine db        # note: NOT the keycloak service
-docker compose logs -f redmine         # first boot: migrations + bundle, ~1 min
+# set strong values for DB_PASS and REDMINE_SECRET_KEY_BASE (openssl rand -hex 32/64).
+# The KEYCLOAK_* / *_CLIENT_SECRET / *_TEST_USER_* variables belong to the local
+# development identity provider and are not used in production.
+
+git clone --depth 1 https://github.com/kontron/redmine_oauth.git plugins/redmine_oauth
+
+docker compose up -d --build redmine db   # note: NOT the keycloak service
+docker compose logs -f redmine            # first boot: migrations + bundle, ~1 min
+
+# REQUIRED on a fresh database: load Redmine's default configuration data
+# (trackers, issue statuses, workflows, priorities, roles). The official image
+# does NOT do this, and without it creating an issue fails with HTTP 500.
+docker compose exec -e REDMINE_LANG=en redmine \
+  bundle exec rake redmine:load_default_data RAILS_ENV=production
+
+./scripts/seed-wiki-docs.sh               # installs the documentation + plugin ledger
 ```
 
 Then in the browser:
 
-1. `https://<domain>/login` → log in `admin` / `admin` → change the admin
-   password immediately.
-2. `Administration → Settings → General` → set host name to the public domain,
-   protocol HTTPS.
-3. `Administration → OAuth providers` → edit the existing provider (or create
-   one): **Site** = IdP base URL · **Tenant ID** = realm · **Client ID/Secret**
-   = from step 3 above. That's the entire IdP swap — 4 values.
-4. Optional: `Administration → Settings → Display → Theme` = "Dee" (our color
-   scheme; placeholder colors, adjustable in `themes/dee/stylesheets/application.css`).
+1. `https://<domain>/login` → log in `admin` / `admin` → **change the admin
+   password immediately**.
+2. `Administration → Settings → General` → set the host name to the public domain
+   and the protocol to HTTPS.
+3. `Administration → OAuth providers` → create/edit the provider:
+   **Site** = IdP base URL · **Tenant ID** = realm · **Client ID / Secret** = the
+   values from section 3. That is the entire IdP swap — four values.
+4. `Administration → Settings → Display → Theme` = **Dee** (our colour scheme;
+   placeholder colours, adjustable in `themes/dee/stylesheets/application.css`).
 
 ## 5. Verify (5 minutes)
 

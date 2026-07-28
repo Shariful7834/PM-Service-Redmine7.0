@@ -1,11 +1,8 @@
-# secrets / local config
+# secrets — never commit
 .env
 keycloak/import/
 
-# personal notes — not for the public repo
-speech.md
-
-# external plugins (cloned, not vendored)
+# third-party plugin source (fetched by scripts/setup.sh)
 plugins/*
 !plugins/.gitkeep
 

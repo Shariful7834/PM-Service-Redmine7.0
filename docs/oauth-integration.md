@@ -77,10 +77,10 @@ taken by a local Apache/XAMPP).
 ```bash
 cp .env.example .env            # fill secrets
 docker compose up -d            # redmine + postgres + keycloak (realm auto-imported)
-./scripts/provision-oauth-provider.sh   # creates the Keycloak OAuth provider in Redmine
+./scripts/setup.sh                     # one command: secrets, realms, plugin, stack, providers, docs
 ```
 
-`provision-oauth-provider.sh` is idempotent; it sets, in the running Redmine:
+`scripts/provision-oauth-providers.sh` is idempotent; it sets, in the running Redmine:
 
 | Field | Value |
 |---|---|
