@@ -94,12 +94,12 @@ docker compose up -d            # redmine + postgres + keycloak (realm auto-impo
 (Equivalent manual path: `Administration → OAuth providers → Keycloak`, same values.)
 Redirect URI already registered in the realm: `http://localhost:3000/oauth2callback`.
 
-### Demo the SSO login (screenshot deliverable)
+### Demo the SSO login
 
 1. Open `http://localhost:3000/login`, log out if needed.
 2. Click the **Keycloak** button.
 3. Authenticate as **`testuser`** / password = `KEYCLOAK_TEST_USER_PASSWORD` in `.env`.
-4. Land in Redmine as that user. Screenshot each step to `docs/screenshots/`.
+4. Land in Redmine as that user (account auto-created on first login).
 
 Keycloak admin console (if needed): `http://localhost:8088` — `admin` /
 `KEYCLOAK_ADMIN_PASSWORD` from `.env`.

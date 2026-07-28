@@ -48,7 +48,7 @@ fixes only, 6.0.x = legacy); no 7.0.1 patch exists yet as of 2026-07-28.
 ## Task board status (PM-Service Redmine)
 
 **M1 — Test-Installation (end July)**
-1. [x] Local Redmine 7.0.0 install running (screenshot `/admin/info` → `docs/screenshots/`)
+1. [x] Local Redmine 7.0.0 install running (verified: `/admin/info` → 7.0.0.stable)
 2. [x] **DEE user service authorisation (OIDC via `redmine_oauth` + Keycloak stand-in) — VERIFIED end-to-end** — [docs/oauth-integration.md](docs/oauth-integration.md)
 3. [x] **Feature check — hands-on, every row tested via API/console** — [docs/feature-check.md](docs/feature-check.md)
 
