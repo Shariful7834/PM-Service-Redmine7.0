@@ -1,0 +1,32 @@
+# Development-only additions: a local Keycloak acting as a stand-in for the DEE
+# user service, so single sign-on can be developed and demonstrated without the
+# university VPN or real credentials.
+#
+# Activated automatically on a developer machine through COMPOSE_FILE in .env
+# (scripts/setup.sh writes it). A server .env leaves COMPOSE_FILE unset, so this
+# file is never loaded there.
+
+services:
+  redmine:
+    extra_hosts:
+      # Lets the container reach the local Keycloak under the same hostname the
+      # browser uses, so the OIDC issuer matches on both sides.
+      - "host.docker.internal:host-gateway"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in .env}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "${KEYCLOAK_PORT:-8088}:8080"
+    volumes:
+      - ./keycloak/import:/opt/keycloak/data/import:ro
+      - keycloak_data:/opt/keycloak/data
+
+volumes:
+  keycloak_data:

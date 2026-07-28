@@ -34,6 +34,20 @@ else
   set_var IDIAL_TEST_USER_PASSWORD    "$(rand 8)"
 fi
 
+# This script is for developer machines, where the local Keycloak must be part of
+# the stack. Refuse to run against a server-style .env instead of silently
+# configuring a demo identity provider on a production instance.
+if ! grep -q '^COMPOSE_FILE=.*docker-compose.dev.yml' .env; then
+  cat >&2 <<'MSG'
+This .env has no development identity provider configured (COMPOSE_FILE does not
+include docker-compose.dev.yml), which means it looks like a SERVER setup.
+
+scripts/setup.sh is for local development only. To deploy on a server, follow
+docs/HANDOVER-farhat.md instead.
+MSG
+  exit 1
+fi
+
 # shellcheck disable=SC1091
 set -a; . ./.env; set +a
 

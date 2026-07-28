@@ -1,3 +1,10 @@
+# Production stack: Redmine + PostgreSQL. Nothing else.
+#
+# The local development identity provider (Keycloak) lives in
+# docker-compose.dev.yml and is pulled in automatically on a developer machine
+# through COMPOSE_FILE in .env. A server .env does not set that variable, so a
+# server can never start the demo identity provider by accident.
+
 services:
   db:
     image: postgres:16-alpine
@@ -15,9 +22,9 @@ services:
       retries: 5
 
   redmine:
-    # OFFICIAL Redmine 7.0 image + one-line Dockerfile fix for /themes asset
-    # serving. Entrypoint runs `bundle check || bundle install` (plugin gems) and,
-    # with REDMINE_PLUGINS_MIGRATE set, `rake redmine:plugins:migrate` on start.
+    # Official Redmine 7.0 image + one-line Dockerfile fix for /themes asset
+    # serving. The entrypoint runs `bundle check || bundle install` (plugin gems)
+    # and, with REDMINE_PLUGINS_MIGRATE set, the plugin migrations on start.
     build: .
     image: dee-redmine:${REDMINE_VERSION:-7.0}
     restart: unless-stopped
@@ -25,9 +32,9 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "${REDMINE_PORT:-3000}:3000"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      # On a server set REDMINE_BIND=127.0.0.1 in .env, so only the reverse proxy
+      # on the same host can reach Redmine and it is never exposed directly.
+      - "${REDMINE_BIND:-0.0.0.0}:${REDMINE_PORT:-3000}:3000"
     environment:
       REDMINE_DB_POSTGRES: db
       REDMINE_DB_PORT: "5432"
@@ -39,27 +46,9 @@ services:
     volumes:
       - files_data:/usr/src/redmine/files
       - ./plugins:/usr/src/redmine/plugins
-      # DEE theme (colors adjustable) — single-theme mount keeps built-ins intact
+      # DEE theme (colours adjustable) — single-theme mount keeps built-ins intact
       - ./themes/dee:/usr/src/redmine/themes/dee
-
-  # Local identity provider for the OAuth/OIDC proof-of-concept. Replaced by the
-  # real DEE user service on the server (change Site/Tenant/Client-ID/Secret only).
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
-    restart: unless-stopped
-    command: ["start-dev", "--import-realm"]
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in .env}
-      KC_HTTP_ENABLED: "true"
-      KC_HOSTNAME_STRICT: "false"
-    ports:
-      - "${KEYCLOAK_PORT:-8088}:8080"
-    volumes:
-      - ./keycloak/import:/opt/keycloak/data/import:ro
-      - keycloak_data:/opt/keycloak/data
 
 volumes:
   db_data:
   files_data:
-  keycloak_data:
