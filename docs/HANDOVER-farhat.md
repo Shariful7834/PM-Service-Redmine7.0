@@ -61,28 +61,28 @@ already prepared and needs **no changes**.
    - scope `openid profile email` permitted, and PKCE (S256) allowed — the plugin
      always sends a code challenge
 
-   You confirmed the DEE User Service is **not Keycloak** but a custom OIDC
-   service on standard OAuth 2.0, so Redmine uses the plugin's **"Custom"**
-   provider mode. That mode needs the endpoints spelled out. Please send me:
+   The DEE User Service (`dee.core`) is Auth0-compatible OAuth 2.0 — I took the
+   endpoint layout from the Academic Wallet, which already authenticates against
+   it, so **only three values are missing**:
 
    | Value | Example |
    |---|---|
-   | base URL (issuer, no path) | `https://users.dee.fh-dortmund.de` |
-   | **authorization endpoint** | `.../protocol/openid-connect/auth` |
-   | **token endpoint** | `.../protocol/openid-connect/token` |
-   | **userinfo endpoint** (optional — if omitted the plugin reads the token itself) | `.../protocol/openid-connect/userinfo` |
-   | client ID | `redmine` |
-   | client secret | (secret) |
-   | claim holding the e-mail address | usually `email` |
-   | claim holding the username | usually `preferred_username` |
+   | base URL of dee.core (as reachable from the Redmine server) | `http://dee.core:8000` |
+   | client ID for Redmine | |
+   | client secret for Redmine | |
 
-> If the service publishes an OpenID discovery document
-> (`<base-url>/.well-known/openid-configuration`), just send me that URL — every
-> endpoint above is listed in it and I can read the rest myself.
+   The endpoints are already known and do not need to be asked for:
 
-I have already configured and tested exactly this "Custom" mode locally against a
-standard OIDC provider, and the login works end to end — so the shape of the
-configuration is proven before we touch the real service.
+   ```
+   authorize : <base>/oauth/authorize
+   token     : <base>/oauth/token
+   userinfo  : <base>/oauth/userinfo
+   scope     : openid profile email
+   ```
+
+Redmine uses the plugin's **"Custom"** provider mode for this. I have configured
+and tested that mode locally against a standard OAuth 2.0 provider and the login
+completes end to end, so only the three values above change.
 
 ---
 
@@ -201,19 +201,19 @@ login button. Since the DEE User Service is a custom OIDC service, choose the
 |---|---|
 | Provider | **`Custom`** |
 | Display name | `DEE User Service` |
-| Site | base URL of the DEE User Service |
+| Site | base URL of dee.core |
 | Tenant ID | leave empty (unused in Custom mode) |
 | Client ID | the client ID |
 | Client secret | the client secret |
-| Authorization endpoint | from the discovery document |
-| Token endpoint | from the discovery document |
-| Profile (userinfo) endpoint | from the discovery document — may be left empty |
+| Authorization endpoint | `<base>/oauth/authorize` |
+| Token endpoint | `<base>/oauth/token` |
+| Profile (userinfo) endpoint | `<base>/oauth/userinfo` |
 | Scope | `openid profile email` |
 | UID field | `preferred_username` |
 | E-mail field | `email` |
 | Firstname / Lastname field | `given_name` / `family_name` |
 
-These exact settings are already proven working in the test instance.
+The endpoint paths come from the Academic Wallet's working dee.core integration.
 
 **d) Administration → Settings → Display → Theme** → `Dee`
 

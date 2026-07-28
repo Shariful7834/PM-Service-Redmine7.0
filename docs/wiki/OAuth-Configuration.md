@@ -53,27 +53,35 @@ container would produce a different issuer and token validation would fail.
 ## The real DEE User Service
 
 Confirmed with Farhat (2026-07-21): the DEE User Service is **not Keycloak**. It is
-a **custom OIDC service speaking standard OAuth 2.0** (source: the `dee.core`
-repository in GitLab). Redmine therefore uses the plugin's **"Custom"** provider
-mode, in which the endpoints are configured explicitly rather than derived from a
-realm name.
+`dee.core`, an **Auth0-compatible OAuth 2.0 provider**. The Academic Wallet already
+authenticates against it, and its integration (`server/dee-core.js`) documents the
+endpoint layout:
 
-Fields for *Administration → OAuth providers*:
+```
+authorize : <base>/oauth/authorize
+token     : <base>/oauth/token
+userinfo  : <base>/oauth/userinfo
+introspect: <base>/oauth/token_info      (machine-to-machine, not needed by Redmine)
+scope     : openid profile email
+```
+
+Redmine uses the plugin's **"Custom"** provider mode, where these endpoints are
+configured explicitly. Fields for *Administration → OAuth providers*:
 
 | Field | Value |
 |---|---|
 | Provider | `Custom` |
-| Site | base URL of the DEE User Service |
-| Tenant ID | empty (unused in Custom mode, but the column must exist) |
-| Client ID / Secret | issued for Redmine |
-| Authorization endpoint | from `<base>/.well-known/openid-configuration` |
-| Token endpoint | idem |
-| Profile (userinfo) endpoint | idem — optional; if empty the plugin reads the claims from the token |
+| Site | base URL of dee.core |
+| Tenant ID | empty (unused in Custom mode, but the column is NOT NULL) |
+| Client ID / Secret | issued for Redmine by the infrastructure team |
+| Authorization endpoint | `<base>/oauth/authorize` |
+| Token endpoint | `<base>/oauth/token` |
+| Profile (userinfo) endpoint | `<base>/oauth/userinfo` |
 | Scope | `openid profile email` |
 | UID / e-mail / firstname / lastname fields | `preferred_username` / `email` / `given_name` / `family_name` |
 
 Plus the production redirect URI `https://<redmine-domain>/oauth2callback`
-registered on the identity-provider side, with PKCE (S256) permitted.
+registered on the dee.core side, with PKCE (S256) permitted.
 
 **This mode is verified.** The development instance runs provider 1 in exactly this
 Custom configuration and a full Authorization-Code + PKCE login completes through
