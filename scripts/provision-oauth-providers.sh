@@ -22,16 +22,34 @@ docker compose exec -T \
   -e DEE_SECRET="${REDMINE_OAUTH_CLIENT_SECRET}" \
   -e IDIAL_SECRET="${IDIAL_CLIENT_SECRET}" \
   redmine bundle exec rails runner "
-# Provider 1 — DEE user service (local Keycloak realm 'd-lab' stands in for it)
-dee = OauthProvider.find_or_initialize_by(custom_name: %q{Keycloak})
-dee.oauth_name       = %q{Keycloak}
-dee.site             = ENV.fetch(%q{SITE})
-dee.client_id        = %q{redmine}
-dee.client_secret    = ENV.fetch(%q{DEE_SECRET})
-dee.tenant_id        = %q{d-lab}
-dee.identify_user_by = %q{email}
-dee.position         = 1
+# Provider 1 — the DEE user service.
+#
+# Farhat confirmed (2026-07-21) that it is NOT Keycloak: it is a custom OIDC
+# service speaking standard OAuth 2.0. The plugin therefore needs its 'Custom'
+# mode, where the endpoints are given explicitly instead of derived from a realm.
+# Locally the endpoints point at the Keycloak realm 'd-lab', which stands in for
+# it — same protocol, so the configuration shape is identical to production.
+dee = OauthProvider.find_or_initialize_by(custom_name: %q{DEE User Service})
+dee.oauth_name              = %q{Custom}
+dee.site                    = ENV.fetch(%q{SITE})
+dee.client_id               = %q{redmine}
+dee.client_secret           = ENV.fetch(%q{DEE_SECRET})
+# Custom mode does not use a tenant/realm, but the column is NOT NULL — keep it blank.
+dee.tenant_id               = %q{}
+dee.custom_auth_endpoint    = %Q{#{ENV.fetch(%q{SITE})}/realms/d-lab/protocol/openid-connect/auth}
+dee.custom_token_endpoint   = %Q{#{ENV.fetch(%q{SITE})}/realms/d-lab/protocol/openid-connect/token}
+dee.custom_profile_endpoint = %Q{#{ENV.fetch(%q{SITE})}/realms/d-lab/protocol/openid-connect/userinfo}
+dee.custom_scope            = %q{openid profile email}
+dee.custom_uid_field        = %q{preferred_username}
+dee.custom_email_field      = %q{email}
+dee.custom_firstname_field  = %q{given_name}
+dee.custom_lastname_field   = %q{family_name}
+dee.identify_user_by        = %q{email}
+dee.position                = 1
 dee.save!
+
+# The old Keycloak-mode entry, if this instance still has one from before.
+OauthProvider.where(custom_name: %q{Keycloak}).destroy_all
 
 # Provider 2 — IDiAL (demonstrates multiple identity providers side by side)
 idial = OauthProvider.find_or_initialize_by(custom_name: %q{IDiAL})

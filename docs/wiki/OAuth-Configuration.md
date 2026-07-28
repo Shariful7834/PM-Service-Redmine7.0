@@ -50,20 +50,34 @@ from the request host, so the browser and the Redmine container must reach the
 identity provider under the *same* hostname. Using `localhost` inside the
 container would produce a different issuer and token validation would fail.
 
-## Switching to the real DEE user service
+## The real DEE User Service
 
-Change exactly these four values in *Administration → OAuth providers*:
+Confirmed with Farhat (2026-07-21): the DEE User Service is **not Keycloak**. It is
+a **custom OIDC service speaking standard OAuth 2.0** (source: the `dee.core`
+repository in GitLab). Redmine therefore uses the plugin's **"Custom"** provider
+mode, in which the endpoints are configured explicitly rather than derived from a
+realm name.
 
-1. **Site** — base URL of the DEE identity provider
-2. **Tenant ID** — realm name
-3. **Client ID**
-4. **Client secret**
+Fields for *Administration → OAuth providers*:
 
-…and register the production redirect URI `https://<redmine-domain>/oauth2callback`
-in the identity provider. Nothing else changes.
+| Field | Value |
+|---|---|
+| Provider | `Custom` |
+| Site | base URL of the DEE User Service |
+| Tenant ID | empty (unused in Custom mode, but the column must exist) |
+| Client ID / Secret | issued for Redmine |
+| Authorization endpoint | from `<base>/.well-known/openid-configuration` |
+| Token endpoint | idem |
+| Profile (userinfo) endpoint | idem — optional; if empty the plugin reads the claims from the token |
+| Scope | `openid profile email` |
+| UID / e-mail / firstname / lastname fields | `preferred_username` / `email` / `given_name` / `family_name` |
 
-Still to confirm with Farhat: the exact protocol details of the DEE user service
-(issuer URL, whether it is Keycloak, which claim carries the email).
+Plus the production redirect URI `https://<redmine-domain>/oauth2callback`
+registered on the identity-provider side, with PKCE (S256) permitted.
+
+**This mode is verified.** The development instance runs provider 1 in exactly this
+Custom configuration and a full Authorization-Code + PKCE login completes through
+it, so only the endpoint values change when moving to the real service.
 
 **Security note:** client secrets live only in `.env` (git-ignored) and in the
 provider configuration inside the database — never in the repository.

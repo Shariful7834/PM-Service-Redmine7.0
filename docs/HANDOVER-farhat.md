@@ -52,27 +52,37 @@ already prepared and needs **no changes**.
 1. **A server** that runs Docker (`docker compose` v2).
 2. **A public domain**, e.g. `redmine.dee.fh-dortmund.de`, TLS terminated at your
    reverse proxy, forwarding to `127.0.0.1:3000`.
-3. **An OAuth2 / OpenID Connect client** for Redmine in the DEE user service:
+3. **An OAuth2 / OpenID Connect client** for Redmine in the DEE User Service:
    - **confidential** client (client authentication switched on)
    - allowed redirect URI, exactly:
      ```
      https://<the-public-domain>/oauth2callback
      ```
+   - scope `openid profile email` permitted, and PKCE (S256) allowed — the plugin
+     always sends a code challenge
 
-   and please send me back:
+   You confirmed the DEE User Service is **not Keycloak** but a custom OIDC
+   service on standard OAuth 2.0, so Redmine uses the plugin's **"Custom"**
+   provider mode. That mode needs the endpoints spelled out. Please send me:
 
    | Value | Example |
    |---|---|
-   | base URL of the user service (issuer, no path) | `https://login.dee.fh-dortmund.de` |
-   | realm / tenant name | `dee` |
+   | base URL (issuer, no path) | `https://users.dee.fh-dortmund.de` |
+   | **authorization endpoint** | `.../protocol/openid-connect/auth` |
+   | **token endpoint** | `.../protocol/openid-connect/token` |
+   | **userinfo endpoint** (optional — if omitted the plugin reads the token itself) | `.../protocol/openid-connect/userinfo` |
    | client ID | `redmine` |
    | client secret | (secret) |
-   | which claim holds the e-mail address | usually `email` |
+   | claim holding the e-mail address | usually `email` |
+   | claim holding the username | usually `preferred_username` |
 
-> You said the user service speaks "OAuth 2.0 or something". If it is **Keycloak**,
-> the four values above are all we need. If it is a different OpenID Connect
-> product, the plugin has a generic "Custom" mode where the endpoints are entered
-> by hand — just tell me which product it is and I will prepare the exact values.
+> If the service publishes an OpenID discovery document
+> (`<base-url>/.well-known/openid-configuration`), just send me that URL — every
+> endpoint above is listed in it and I can read the rest myself.
+
+I have already configured and tested exactly this "Custom" mode locally against a
+standard OIDC provider, and the login works end to end — so the shape of the
+configuration is proven before we touch the real service.
 
 ---
 
@@ -184,15 +194,26 @@ Log in at `https://<the-public-domain>` with **`admin` / `admin`**.
 (Otherwise links in notification e-mails point at `localhost:3000`.)
 
 **c) Administration → OAuth providers → new provider** — this creates the DEE
-login button:
+login button. Since the DEE User Service is a custom OIDC service, choose the
+**Custom** provider type and fill in:
 
 | Field | Value |
 |---|---|
-| Provider | `Keycloak` — or `Custom` if the user service is a different OIDC product |
-| Site | base URL of the DEE user service |
-| Tenant ID | realm / tenant name |
+| Provider | **`Custom`** |
+| Display name | `DEE User Service` |
+| Site | base URL of the DEE User Service |
+| Tenant ID | leave empty (unused in Custom mode) |
 | Client ID | the client ID |
 | Client secret | the client secret |
+| Authorization endpoint | from the discovery document |
+| Token endpoint | from the discovery document |
+| Profile (userinfo) endpoint | from the discovery document — may be left empty |
+| Scope | `openid profile email` |
+| UID field | `preferred_username` |
+| E-mail field | `email` |
+| Firstname / Lastname field | `given_name` / `family_name` |
+
+These exact settings are already proven working in the test instance.
 
 **d) Administration → Settings → Display → Theme** → `Dee`
 
