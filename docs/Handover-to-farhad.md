@@ -84,9 +84,9 @@ third-party code and is not vendored into our repository.
 
 | # | Item | Notes |
 |---|---|---|
-| 1 | **A VM with Docker** and the `docker compose` v2 plugin | modest: 2 vCPU / 4 GB RAM / 20 GB disk is plenty |
-| 2 | **A public domain**, e.g. `redmine.dee.fh-dortmund.de`, TLS at your reverse proxy, forwarding to `127.0.0.1:3000` | Redmine itself binds to loopback only |
-| 3 | **An OAuth client for Redmine in dee.core** | details below |
+| 1 | **A machine to run it on** — one of the virtual machines you manage, with Docker and the `docker compose` v2 plugin installed | Resource needs are modest: 2 vCPU / 4 GB RAM / 20 GB disk is plenty. It only has to be reachable by the team and stay running. |
+| 2 | **An address people can open in the browser**, e.g. `https://redmine.dee.fh-dortmund.de` — TLS at your reverse proxy, forwarding to `127.0.0.1:3000` on that machine | Redmine itself listens only on localhost, so the proxy is the only way in |
+| 3 | **An OAuth client for Redmine in dee.core** | so people log in with their existing DEE account — details below |
 
 For item 3, please create a **confidential** client (client authentication on) with
 this exact redirect URI:
