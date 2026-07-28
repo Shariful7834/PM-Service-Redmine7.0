@@ -38,6 +38,13 @@ only followed ~2026-07-27. The initial test installation therefore ran on a
 community image; the stack was migrated in place to the official image on
 2026-07-28 (same PostgreSQL volume — all data preserved and re-verified).
 
+Note on "official": the Redmine project itself distributes only source code
+(redmine.org/Download lists no Docker images). The `redmine` image is maintained
+by **Docker's official-images program** — a separate channel, which is why
+redmine.org says nothing about it. Per redmine.org, **7.0.x is the latest stable
+line and the only one receiving new features + full security support** (6.1.x =
+fixes only, 6.0.x = legacy); no 7.0.1 patch exists yet as of 2026-07-28.
+
 ## Task board status (PM-Service Redmine)
 
 **M1 — Test-Installation (end July)**
