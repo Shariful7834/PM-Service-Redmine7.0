@@ -1,0 +1,33 @@
+/* DEE theme for Redmine 7 — placeholder color scheme.
+ *
+ * Redmine loads this stylesheet IN ADDITION to the default one, so only
+ * overrides belong here. Replace the two hex values below with the official
+ * DEE corporate colors once the team provides them (ask Alysia/Christian).
+ */
+:root {
+  --dee-primary: #005b7f;   /* header / top menu background  — PLACEHOLDER */
+  --dee-accent:  #39b54a;   /* links / highlights            — PLACEHOLDER */
+}
+
+/* top bar */
+#top-menu { background-color: var(--dee-primary); }
+#header   { background-color: var(--dee-primary); }
+#header h1 { color: #fff; }
+
+/* main menu tabs */
+#main-menu ul li a { background-color: transparent; }
+#main-menu ul li a:hover,
+#main-menu ul li a.selected { background-color: rgba(255, 255, 255, 0.15); }
+
+/* links + primary buttons */
+a, a:link, a:visited { color: var(--dee-primary); }
+a:hover { color: var(--dee-accent); }
+input[type="submit"], button[type="submit"] {
+  background-color: var(--dee-primary);
+  color: #fff;
+  border-color: var(--dee-primary);
+}
+input[type="submit"]:hover, button[type="submit"]:hover {
+  background-color: var(--dee-accent);
+  border-color: var(--dee-accent);
+}
