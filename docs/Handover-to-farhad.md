@@ -272,8 +272,12 @@ login — nobody needs to be pre-registered.
 | Project **"Redmine Administration"** | contains installation notes and the **Plugin Security Ledger** |
 | Upload a file to an issue | works (proves the files volume is writable) |
 
-When these pass, tell me — I will announce it to the team on Teams, and Christian
-and Olesja start testing.
+**Please do the SSO check yourself.** I am off the university network and have no
+VPN access, so I cannot log in with a DEE account or reach dee.core to test it.
+That part has to be verified by you — it is the one thing I cannot do remotely.
+
+When these pass, send me the URL and I will tell the team on Teams so Christian and
+Olesja can start testing.
 
 ---
 
@@ -333,11 +337,16 @@ exactly one: `redmine_oauth` 4.2.0, next audit due **2026-08-28**.
 
 ## 10. After go-live
 
-1. You confirm the instance is reachable.
-2. I finish the DEE login configuration and verify it end to end.
+1. You deploy it, configure the DEE login (section 6) and confirm the SSO login
+   works — I cannot do that part without VPN access.
+2. You send me the URL.
 3. I announce it on Teams; Christian and Olesja begin testing.
 4. During August: a concept for migrating the Confluence content into Redmine.
 5. Target: full production use from the start of the new semester.
+
+If you would rather I did the Redmine-side configuration myself, the quickest fix
+is VPN access for me — otherwise section 6 is all yours. Either way is fine, just
+tell me which.
 
 Thanks — and again, please ask rather than improvise if anything looks different
 from what is written here.
