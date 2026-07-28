@@ -1,6 +1,6 @@
 # Deployment — status & go-live communication
 
-**The complete deployment guide lives in [HANDOVER-farhat.md](HANDOVER-farhat.md)**
+**The complete deployment guide lives in [Handover-to-farhad.md](Handover-to-farhad.md)**
 (aim, stack, required inputs, step-by-step, verification checklist, ops notes).
 This file only keeps what is not in the handover: the go-live announcement and
 the open-items tracker.

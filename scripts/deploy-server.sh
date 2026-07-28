@@ -18,7 +18,7 @@ command -v docker >/dev/null || fail "docker is not installed"
 docker info >/dev/null 2>&1 || fail "the Docker daemon is not running"
 docker compose version >/dev/null 2>&1 || fail "the 'docker compose' plugin is missing"
 
-[ -f .env ] || fail ".env is missing. Copy .env.example to .env and fill it in first (see docs/HANDOVER-farhat.md section 3)."
+[ -f .env ] || fail ".env is missing. Copy .env.example to .env and fill it in first (see docs/Handover-to-farhad.md section 3)."
 
 # shellcheck disable=SC1091
 set -a; . ./.env; set +a
@@ -109,18 +109,29 @@ cat <<EOF
       Protocol          : HTTPS
 
  3. Administration -> OAuth providers -> new provider
-      Provider    : Keycloak   (or "Custom" for a non-Keycloak OIDC service)
-      Site        : <base URL of the DEE user service>
-      Tenant ID   : <realm name>
-      Client ID   : <client id issued for Redmine>
-      Client secret: <client secret>
-    The identity provider must allow the redirect URI:
+    dee.core is Auth0-compatible OAuth 2.0, so use the "Custom" provider type:
+
+      Provider       : Custom
+      Display name   : DEE User Service
+      Site           : <base URL of dee.core>
+      Tenant ID      : (leave empty)
+      Client ID      : <client id issued for Redmine>
+      Client secret  : <client secret>
+      Authorization  : <base>/oauth/authorize
+      Token          : <base>/oauth/token
+      Profile        : <base>/oauth/userinfo
+      Scope          : openid profile email
+      UID field      : preferred_username
+      E-mail field   : email
+
+    dee.core must allow the redirect URI:
       https://<the public domain>/oauth2callback
 
  4. Administration -> Settings -> Display -> Theme : Dee
 
  5. Log out and sign in once through the SSO button to confirm it works.
 
+ Full guide  : docs/Handover-to-farhad.md
  Documentation lives inside Redmine: project "Redmine Administration".
 ────────────────────────────────────────────────────────────────────
 EOF

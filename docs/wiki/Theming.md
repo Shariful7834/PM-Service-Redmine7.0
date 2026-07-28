@@ -42,6 +42,6 @@ Mounted from the repository (`themes/dee/`). Two placeholder colors:
 | `--dee-primary` | `#005b7f` | header / top menu, links, buttons |
 | `--dee-accent` | `#39b54a` | hover and highlight states |
 
-**TODO:** replace with the official DEE corporate colors — ask Alysia or Christian
+**TODO:** replace with the official DEE corporate colors — ask Olesja or Christian
 for the exact color codes. Only these two hex values in
 `themes/dee/stylesheets/application.css` need to change; nothing else.

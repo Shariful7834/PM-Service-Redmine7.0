@@ -49,7 +49,7 @@ The `Dockerfile` adds exactly one thing to the official image: a symlink that ma
 
 - [x] Multiple identity providers possible? → **yes, demonstrated with two live IdPs**, plus the IDiAL/brokering options → [docs/multi-provider-oauth.md](docs/multi-provider-oauth.md)
 - [ ] Confluence → Redmine data-migration **concept** → [docs/confluence-migration.md](docs/confluence-migration.md)
-- [ ] Deployment on a DEE server → [docs/HANDOVER-farhat.md](docs/HANDOVER-farhat.md) *(needs server + real IdP credentials)*
+- [ ] Deployment on a DEE server → [docs/Handover-to-farhad.md](docs/Handover-to-farhad.md) *(needs server + real IdP credentials)*
 
 ## Documentation
 

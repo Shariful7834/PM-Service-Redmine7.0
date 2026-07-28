@@ -8,7 +8,7 @@
 # registers the identity providers and seeds the documentation wiki.
 #
 # For the production server the identity provider is the real DEE user service,
-# not the bundled Keycloak — see docs/HANDOVER-farhat.md.
+# not the bundled Keycloak — see docs/Handover-to-farhad.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -43,7 +43,7 @@ This .env has no development identity provider configured (COMPOSE_FILE does not
 include docker-compose.dev.yml), which means it looks like a SERVER setup.
 
 scripts/setup.sh is for local development only. To deploy on a server, follow
-docs/HANDOVER-farhat.md instead.
+docs/Handover-to-farhad.md instead.
 MSG
   exit 1
 fi

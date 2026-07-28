@@ -9,12 +9,12 @@ Self-hosted **Redmine 7.0** for the **DEE** research group at FH Dortmund,
 evaluated as a replacement for the group's paid **Jira + Confluence**, with login
 through the **DEE user service** (central SSO, same pattern as the Academic Wallet).
 
-People: **Prof. Christian Reimann** (supervisor, sets the tasks) · **Alysia**
-(coordinator, will test) · **Farhat** (servers, Docker, identity provider) ·
+People: **Prof. Christian Reimann** (supervisor, sets the tasks) · **Olesja**
+(coordinator, will test) · **Farhad** (servers, Docker, identity provider) ·
 **Torsten/Carsten** (own the OTRS ticket system).
 
 Meeting transcripts garble names — Kristen/Kasan Rayman = Christian Reimann,
-Farhad/Farut = Farhat, "OTS" = OTRS, "OOTH" = OAuth.
+Farhat/Farut = Farhad, "OTS" = OTRS, "OOTH" = OAuth.
 
 ## Requirements, and what is settled
 
@@ -26,7 +26,7 @@ Farhad/Farut = Farhat, "OTS" = OTRS, "OOTH" = OAuth.
 | Multiple identity providers / IDiAL accounts | answered **yes**, demonstrated with two live IdPs |
 | Document every plugin (name, purpose, audit) **inside Redmine** | done — seeded from `docs/wiki/` |
 | Match the team colour scheme | `themes/dee/`, two placeholder hex values await the real colours |
-| Deploy on a DEE server, then message the team on Teams | **blocked on Farhat** (server + IdP credentials) |
+| Deploy on a DEE server, then message the team on Teams | **blocked on Farhad** (server + IdP credentials) |
 | Confluence → Redmine migration **concept** (not an actual migration) | open, August task |
 | OTRS / email ticketing | explicitly out of scope |
 
