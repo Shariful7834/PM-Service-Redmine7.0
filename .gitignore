@@ -9,3 +9,6 @@ plugins/*
 # logs & scratch
 *.log
 *.tmp
+
+# local-only assistant pointer, never committed
+CLAUDE.md

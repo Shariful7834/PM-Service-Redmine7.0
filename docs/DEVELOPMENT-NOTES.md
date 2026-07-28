@@ -1,7 +1,7 @@
-# Project context for Claude
+# Development notes
 
-Continuation of work previously done in `thesis-projects-reiman/redmine`. This
-directory is the clean, authoritative workspace.
+Background, decisions and hard-won details for anyone working on this project —
+including future me. Written down so the same problems are not solved twice.
 
 ## What this is and who wants it
 
@@ -61,10 +61,9 @@ showstopper in August the topic may be cancelled or changed.
 - Verify claims before stating them; the supervisor checks. Never present an
   untested assumption as a result.
 - After any UI or theme change, **render it in a browser and look at it**.
-  Status codes hide visual breakage. Playwright recipe: `npm i playwright-core`,
-  then `chromium.launch({ channel: 'chrome' })` — uses the installed Chrome.
-- Git commits here carry **no `Co-Authored-By` trailer** (the supervisor sees this
-  repository).
+  Status codes hide visual breakage — a page can return HTTP 200 and still be
+  completely unstyled. For automated checking: `npm i playwright-core`, then
+  `chromium.launch({ channel: 'chrome' })` uses the already-installed Chrome.
 - Secrets belong in `.env` and the database only. Never commit them.
 - Keep the workspace minimal — remove anything that stops being necessary.
 
